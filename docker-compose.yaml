@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: pythonweb-hw10-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=hw10
+    ports:
+      - "5432:5432"
