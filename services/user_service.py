@@ -3,14 +3,13 @@ from typing import Optional, Dict
 
 from fastapi import UploadFile
 
-from schemas.users import UserUpdate, UserOut
+from schemas.users import UserOut
 
 
 class IUserUpdateRepository(ABC):
     @abstractmethod
     def get_by_id(self, user_id: int):
         pass
-
 
     @abstractmethod
     def update_avatar(self, user_id: int, avatar_url: str):
@@ -31,7 +30,6 @@ class UserService:
     def __init__(self, user_repository: IUserUpdateRepository, image_client: IImageStorage):
         self.user_repository = user_repository
         self.image_client = image_client
-
 
     def change_avatar(self, user_id: int, file: UploadFile) -> Optional[UserOut]:
         user = self.user_repository.get_by_id(user_id)

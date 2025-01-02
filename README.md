@@ -27,12 +27,3 @@ docker compose up -d --build
 Open http://127.0.0.1:8000/docs in your browser
 to view the automatically generated Swagger
 documentation and test the API.
-
-#### or
-
-You can run the test_api.py script to test the
-main features of the API:
-
-```shell
-python3 test_api.py
-```

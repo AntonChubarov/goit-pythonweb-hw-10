@@ -3,12 +3,12 @@ from abc import abstractmethod, ABC
 from datetime import datetime, timedelta
 from typing import Optional, List
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from schemas.auth import Token, TokenData
+from schemas.auth import Token
 from schemas.users import UserCreate, UserOut, UserInDB
 
 SECRET_KEY = os.environ.get("AUTH_SECRET_KEY")
@@ -127,7 +127,7 @@ class AuthService:
         access_token = self.create_access_token(data={"sub": user.username})
         return Token(access_token=access_token, token_type="bearer")
 
-    def get_current_user(self, token: str) -> UserOut:
+    def get_current_user(self, token: str = Depends(oauth2_scheme)):
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -139,11 +139,10 @@ class AuthService:
             username: str = payload.get("sub")
             if username is None:
                 raise credentials_exception
-            token_data = TokenData(username=username)
         except JWTError:
             raise credentials_exception
 
-        user = self.user_repository.get_by_username(token_data.username)
+        user = self.user_repository.get_by_username(username)
         if user is None:
             raise credentials_exception
-        return UserOut.from_orm(user)
+        return user
