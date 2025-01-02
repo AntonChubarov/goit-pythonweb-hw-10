@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Date, Boolean, create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from schemas.users import UserCreate, UserInDB
+from schemas.users import UserInDB
 from services.auth_service import IUserRepository
 from services.user_service import IUserUpdateRepository
 
@@ -59,17 +59,6 @@ class UserRepository(IUserRepository, IUserUpdateRepository):
 
     def get_by_id(self, user_id: int):
         return self.db.query(User).filter(User.id == user_id).first()
-
-    def update(self, user_id: int, user_update: dict):
-        user = self.get_by_id(user_id)
-        if not user:
-            return None
-
-        for key, value in user_update.items():
-            setattr(user, key, value)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
 
     def update_avatar(self, user_id: int, avatar_url: str):
         user = self.get_by_id(user_id)

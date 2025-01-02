@@ -5,7 +5,6 @@
 ### Requirements
 - Python 3.10
 - Docker and Docker Compose
-- Poetry
 
 ### Installation
 
@@ -14,29 +13,13 @@ git clone https://github.com/AntonChubarov/goit-pythonweb-hw-10
 ```
 
 ```shell
-cd goit-pythonweb-hw-08
-```
-
-```shell
-docker compose up -d --build
-```
-
-```shell
-poetry shell
-```
-
-```shell
-poetry install
-```
-
-```shell
-alembic upgrade head
+cd goit-pythonweb-hw-10
 ```
 
 ### Running the Application
 
 ```shell
-fastapi dev main.py
+docker compose up -d --build
 ```
 
 ### Testing

@@ -5,7 +5,7 @@ from fastapi_limiter.depends import RateLimiter
 from clients.cloudinary_client import CloudinaryClient
 from clients.fast_api_mail_client import FastApiMailClient
 from repositories.user_repository import UserRepository
-from schemas.users import UserOut, UserUpdate
+from schemas.users import UserOut
 from services.auth_service import AuthService
 from services.user_service import UserService
 
@@ -21,14 +21,6 @@ user_service = UserService(user_repository=user_repository, image_client=image_c
 @router.get("/me", response_model=UserOut, dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 def get_current_user_info(current_user: UserOut = Depends(auth_service.get_current_user)):
     return current_user
-
-
-@router.put("/me", response_model=UserOut)
-def update_user(user_update: UserUpdate, current_user: UserOut = Depends(auth_service.get_current_user)):
-    updated_user = user_service.update_user(current_user.id, user_update)
-    if not updated_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return updated_user
 
 
 @router.post("/me/avatar", response_model=UserOut)

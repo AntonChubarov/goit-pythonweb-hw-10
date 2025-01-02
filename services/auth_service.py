@@ -33,6 +33,10 @@ class IUserRepository(ABC):
     def create(self, user_data: dict):
         pass
 
+    @abstractmethod
+    def mark_email_confirmed(self, user_id: int):
+        pass
+
 
 class IEmailSender(ABC):
     @abstractmethod
