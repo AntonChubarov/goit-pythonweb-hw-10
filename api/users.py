@@ -1,6 +1,10 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, Request
 from fastapi.params import File
+from jose import jwt
 from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from clients.cloudinary_client import CloudinaryClient
 from clients.fast_api_mail_client import FastApiMailClient
@@ -9,10 +13,21 @@ from schemas.users import UserOut
 from services.auth_service import AuthService
 from services.user_service import UserService
 
-limiter = Limiter(
-    key_func=lambda request: f"user-{getattr(request.state, 'user_id', 'anonymous')}",
-    storage_uri="redis://redis:6379"
-)
+SECRET_KEY = os.environ.get("AUTH_SECRET_KEY")
+ALGORITHM = os.environ.get("AUTH_JWT_ALGORITHM")
+
+
+def custom_key_func(request: Request):
+    try:
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub", "anonymous")
+        return f"user-{user_id}"
+    except Exception:
+        return f"ip-{get_remote_address(request)}"
+
+
+limiter = Limiter(key_func=custom_key_func, storage_uri="redis://redis:6379")
 
 router = APIRouter(prefix="/users", tags=["users"])
 
